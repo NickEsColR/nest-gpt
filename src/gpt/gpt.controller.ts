@@ -2,6 +2,8 @@ import { Body, Controller, FileTypeValidator, Get, HttpStatus, MaxFileSizeValida
 import { GptService } from './gpt.service';
 import {
   AudioToTextDto,
+  ImageGenerationDto,
+  ImageVariationDto,
   OrtographyDto,
   ProsConsDiscusserDto,
   TextToAudioDto,
@@ -98,5 +100,29 @@ export class GptController {
     @Body() audioToTextDto: AudioToTextDto,
   ) {
     return this.gptService.audioToText(file, audioToTextDto);
+  }
+
+  @Post('image-generation')
+  async imageGeneration(@Body() imageGenerationDto: ImageGenerationDto) {
+    return this.gptService.imageGeneration(imageGenerationDto);
+  }
+
+  @Get('image-generation/:fileName')
+  async getGeneratedImage(
+    @Res() res: Response,
+    @Param('fileName') fileName: string,
+  ) {
+    const filePath = this.gptService.getGeneratedImage(fileName);
+
+    res.setHeader('Content-Type', 'image/png');
+    res.status(HttpStatus.OK);
+    res.sendFile(filePath);
+  }
+
+  @Post('image-generation-variation')
+  async imageVariation(
+    @Body() imageGenerationDto: ImageVariationDto,
+  ) {
+    return await this.gptService.imageVariation(imageGenerationDto);
   }
 }
